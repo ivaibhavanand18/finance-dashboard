@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Buddy - Personal Finance Dashboard</title>
+  <meta name="description" content="A modern, responsive personal finance dashboard for tracking income, expenses, and transaction history.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <!-- Pure CSS Theme Toggle Checkbox (Must be top level for CSS :has / sibling selectors) -->
+  <input type="checkbox" id="theme-toggle" class="theme-toggle-input" aria-label="Toggle Light and Dark Theme">
+
+  <div class="app-wrapper">
+    <!-- Navigation / Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand-logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="brand-name">Finance<span>Buddy</span></span>
+        </div>
+
+        <nav class="nav-links">
+          <a href="#" class="nav-item nav-btn active" data-target="view-dashboard">Dashboard</a>
+          <a href="#" class="nav-item nav-btn" data-target="view-analytics">Analytics</a>
+          <a href="#" class="nav-item nav-btn" data-target="view-transactions">Transactions</a>
+          <a href="#" class="nav-item nav-btn" data-target="view-budgets">Budgets</a>
+        </nav>
+
+        <div class="header-actions">
+          <!-- Month Selector Control -->
+          <div class="month-selector-wrapper" title="Select Month for Dashboard Overview">
+            <span class="month-selector-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </span>
+            <input type="month" id="monthSelector" class="form-control month-input">
+          </div>
+
+          <!-- Theme Toggle Controller -->
+          <label for="theme-toggle" class="theme-toggle-label" title="Toggle Light/Dark Theme">
+            <span class="theme-toggle-track">
+              <span class="icon-sun">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              </span>
+              <span class="icon-moon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              </span>
+              <span class="theme-toggle-thumb"></span>
+            </span>
+          </label>
+
+          <div class="user-profile" id="userProfileBadge" title="Click to view and edit your profile details">
+            <div class="avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <span class="user-name">Alex Morgan</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container with SPA Views -->
+    <main class="main-container">
+
+      <!-- View 1: Dashboard -->
+      <section id="view-dashboard" class="spa-view active-view">
+        <!-- Top Overview Metrics Grid -->
+        <div class="overview-section">
+          <!-- Card 1: Total Balance (Primary Hero Card) -->
+          <div class="card card-balance">
+            <div class="balance-header">
+              <div>
+                <p class="card-label">Total Balance</p>
+                <h1 class="balance-amount" id="total-balance">₹0.00</h1>
+              </div>
+              <div class="badge badge-success">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+                +14.2%
+              </div>
+            </div>
+            <div class="card-footer-info">
+              <div class="card-chip-info">
+                <span class="card-type">Premium Checking</span>
+                <span class="card-number">•••• 4829</span>
+              </div>
+              <div class="quick-actions">
+                <button class="btn btn-glass-sm" type="button">Send</button>
+                <button class="btn btn-glass-sm" type="button">Receive</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Total Income -->
+          <div class="card card-summary card-income">
+            <div class="summary-top">
+              <div class="summary-icon icon-income-bg">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"></line>
+                  <polyline points="5 12 12 5 19 12"></polyline>
+                </svg>
+              </div>
+              <span class="badge badge-success">+8.5%</span>
+            </div>
+            <div class="summary-body">
+              <span class="card-label">Total Income</span>
+              <h2 class="summary-value" id="total-income">₹0.00</h2>
+              <span class="summary-subtext">+₹650.00 vs last month</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar progress-income" id="income-progress" style="width: 78%;"></div>
+            </div>
+          </div>
+
+          <!-- Card 3: Total Expenses -->
+          <div class="card card-summary card-expense">
+            <div class="summary-top">
+              <div class="summary-icon icon-expense-bg">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+              </div>
+              <span class="badge badge-warning">-3.2%</span>
+            </div>
+            <div class="summary-body">
+              <span class="card-label">Total Expenses</span>
+              <h2 class="summary-value" id="total-expenses">₹0.00</h2>
+              <span class="summary-subtext">-₹105.00 vs last month</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar progress-expense" id="expense-progress" style="width: 42%;"></div>
+            </div>
+          </div>
+
+          <!-- Card 4: Net Savings Ratio -->
+          <div class="card card-summary card-savings">
+            <div class="summary-top">
+              <div class="summary-icon icon-savings-bg">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <span class="badge badge-info">Goal: 70%</span>
+            </div>
+            <div class="summary-body">
+              <span class="card-label">Net Savings</span>
+              <h2 class="summary-value" id="net-savings">₹0.00</h2>
+              <span class="summary-subtext" id="savings-rate-subtext">0% savings rate</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar progress-savings" id="savings-progress" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Transaction Form Section -->
+        <div style="margin-top: 1.5rem;">
+          <section class="card content-card form-section">
+            <div class="card-header">
+              <h2 class="card-title">Add Transaction</h2>
+              <p class="card-subtitle">Record a new income or expense entry</p>
+            </div>
+
+            <form class="transaction-form" id="transaction-form" action="#" method="POST">
+              <!-- Type Selector -->
+              <div class="form-group">
+                <label class="form-label">Transaction Type</label>
+                <div class="radio-segmented-control">
+                  <label class="radio-segment">
+                    <input type="radio" name="type" id="type-income" value="income">
+                    <span class="radio-segment-button segment-income">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                      </svg>
+                      Income
+                    </span>
+                  </label>
+
+                  <label class="radio-segment">
+                    <input type="radio" name="type" id="type-expense" value="expense" checked>
+                    <span class="radio-segment-button segment-expense">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                      </svg>
+                      Expense
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Description Input -->
+              <div class="form-group">
+                <label for="description" class="form-label">Description</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </span>
+                  <input type="text" id="description" name="description" class="form-control" placeholder="e.g. Grocery Shopping, Salary..." required>
+                </div>
+              </div>
+
+              <!-- Amount Input -->
+              <div class="form-group">
+                <label for="amount" class="form-label">Amount (₹)</label>
+                <div class="input-wrapper">
+                  <span class="input-icon font-bold">₹</span>
+                  <input type="number" id="amount" name="amount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required>
+                </div>
+              </div>
+
+              <!-- Category Dropdown -->
+              <div class="form-group">
+                <label for="category" class="form-label">Category</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                  </span>
+                  <select id="category" name="category" class="form-control select-control" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="salary">Salary & Wages</option>
+                    <option value="freelance">Freelance & Side Income</option>
+                    <option value="food">Food & Dining</option>
+                    <option value="housing">Housing & Utilities</option>
+                    <option value="shopping">Shopping & Entertainment</option>
+                    <option value="transport">Transportation</option>
+                    <option value="investment">Investments & Savings</option>
+                    <option value="health">Healthcare & Fitness</option>
+                    <option value="other">Other / Miscellaneous</option>
+                  </select>
+                  <span class="select-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Date Input -->
+              <div class="form-group">
+                <label for="date" class="form-label">Date</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </span>
+                  <input type="date" id="date" name="date" class="form-control" required>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary btn-submit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Transaction
+              </button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <!-- View 2: Analytics -->
+      <section id="view-analytics" class="spa-view" style="display: none;">
+        <section class="card content-card chart-section">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Expense Breakdown & Analytics</h2>
+              <p class="card-subtitle">Spending by category visualization</p>
+            </div>
+          </div>
+          <div id="chart-container" class="chart-container" style="height: 320px;">
+            <canvas id="expenseChart"></canvas>
+          </div>
+        </section>
+      </section>
+
+      <!-- View 3: Transactions -->
+      <section id="view-transactions" class="spa-view" style="display: none;">
+        <section class="card content-card transactions-section">
+          <div class="card-header">
+            <div class="header-title-group">
+              <h2 class="card-title">Transaction History</h2>
+              <span class="counter-badge" id="transactions-count">0 Total</span>
+            </div>
+            <div class="filter-actions" id="filter-buttons">
+              <button class="btn-filter active" data-filter="all" type="button">All</button>
+              <button class="btn-filter" data-filter="income" type="button">Income</button>
+              <button class="btn-filter" data-filter="expense" type="button">Expenses</button>
+            </div>
+          </div>
+
+          <!-- Search & Category Filter Bar -->
+          <div class="transactions-filter-bar">
+            <div class="search-wrapper">
+              <span class="search-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="text" id="searchInput" class="form-control search-input" placeholder="Search transactions...">
+            </div>
+
+            <div class="filter-select-wrapper">
+              <select id="filterCategory" class="form-control select-control filter-select">
+                <option value="all">All Categories</option>
+                <option value="salary">Salary & Wages</option>
+                <option value="freelance">Freelance & Side Income</option>
+                <option value="food">Food & Dining</option>
+                <option value="housing">Housing & Utilities</option>
+                <option value="shopping">Shopping & Entertainment</option>
+                <option value="transport">Transportation</option>
+                <option value="investment">Investments & Savings</option>
+                <option value="health">Healthcare & Fitness</option>
+                <option value="other">Other / Miscellaneous</option>
+              </select>
+              <span class="select-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="transactions-list" id="transactions-list">
+            <!-- Rendered dynamically by script.js -->
+          </div>
+        </section>
+      </section>
+
+      <!-- View 4: Budgets -->
+      <section id="view-budgets" class="spa-view" style="display: none;">
+        <section class="card content-card budget-section">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Monthly Budget Tracking</h2>
+              <p class="card-subtitle">Set monthly limit & track spending warnings</p>
+            </div>
+          </div>
+
+          <!-- Budget Setup -->
+          <div class="budget-setup-form">
+            <div class="form-group">
+              <label for="budgetInput" class="form-label">Set Monthly Budget (₹)</label>
+              <div class="budget-input-group">
+                <div class="input-wrapper" style="flex: 1;">
+                  <span class="input-icon font-bold">₹</span>
+                  <input type="number" id="budgetInput" class="form-control" placeholder="e.g. 20000" step="1" min="0">
+                </div>
+                <button type="button" id="setBudgetBtn" class="btn btn-primary btn-budget-set">Set Budget</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budget Tracking -->
+          <div class="budget-tracking-container">
+            <div class="budget-info-row">
+              <span class="card-label">Amount Remaining:</span>
+              <span class="budget-remaining-value" id="budgetRemaining">₹0.00</span>
+            </div>
+
+            <div class="progress-bar-container budget-progress-container">
+              <div id="budgetProgressBar" class="progress-bar budget-progress-bar" style="width: 0%;"></div>
+            </div>
+
+            <p id="budgetWarning" class="budget-warning-text"></p>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Personal Profile Modal -->
+  <div id="profileModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card card content-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="card-title">Personal Details Profile</h2>
+          <p class="card-subtitle">Update your personal information & preferences</p>
+        </div>
+        <button type="button" class="btn-modal-close" id="closeProfileModalBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="profileForm" class="profile-form" action="#">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="profileName" class="form-label">Full Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" id="profileName" class="form-control" placeholder="e.g. Alex Morgan" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="profileAge" class="form-label">Age</label>
+            <div class="input-wrapper">
+              <span class="input-icon font-bold">#</span>
+              <input type="number" id="profileAge" class="form-control" placeholder="e.g. 28" min="1" max="120">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="profileGender" class="form-label">Gender</label>
+            <div class="input-wrapper">
+              <select id="profileGender" class="form-control select-control">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Other">Other / Prefer not to say</option>
+              </select>
+              <span class="select-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="profileProfession" class="form-label">Profession</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </span>
+              <input type="text" id="profileProfession" class="form-control" placeholder="e.g. Software Engineer">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="profileEmail" class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" id="profileEmail" class="form-control" placeholder="alex@example.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="profilePhone" class="form-label">Phone Number</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+              </span>
+              <input type="tel" id="profilePhone" class="form-control" placeholder="+91 98765 43210">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-filter" id="cancelProfileBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="width: auto;">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+
